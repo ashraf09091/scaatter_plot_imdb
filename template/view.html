@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Search Recent Tweets</title>
+    <link
+      rel="stylesheet"
+      href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"
+    />
+        <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css"
+    />
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+    <style>
+    .events{
+padding-top: 40px;
+}
+#overlay{
+  position: fixed;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  height:100%;
+  display: none;
+  background: rgba(0,0,0,0.6);
+}
+.cv-spinner {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px #ddd solid;
+  border-top: 4px #2e93e6 solid;
+  border-radius: 50%;
+  animation: sp-anime 0.8s infinite linear;
+}
+@keyframes sp-anime {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.is-hide{
+  display:none;
+}
+    </style>
+</head>
+  <body>
+    <div class="col-sm-6 col-sm-offset-3">
+      <h1>Scatter Plot For Top IMBD 250 Movies</h1>
+      <div class='image_loader'>
+      <H2>Image Loading please Wait...</H2>
+      </div>
+      <img src="/sactter" alt="Girl in a jacket"  id= "myimg" class="img-fluid" alt="Responsive image">
+
+    </div>
+<div id="overlay">
+  <div class="cv-spinner">
+    <span class="spinner"></span>
+  </div>
+</div>
+
+
+    <div class="mt-2 col-sm-6 col-sm-offset-3">
+    <div class="events">
+    <h2> List of Movies</h2>
+    <table id="mytables" class="table table-striped table-bordered" cellspacing="0" width="100%" style="display:none">
+    <thead>
+        <tr>
+            <th>Movie Name</th>
+            <th>Ratings</th>
+            <th>Votes</th>
+        </tr>
+    </thead>
+</table>
+</div>
+</div>
+
+  </body>
+</html>
+
+<script>
+
+
+
+    var img=document.getElementById('myimg');
+
+    window.addEventListener("load", event => {
+    var image = document.querySelector('img');
+    var isLoaded = image.complete && image.naturalHeight !== 0;
+     $('.image_loader').remove();
+    });
+
+$(document).ready(function () {
+
+    $(document).ajaxSend(function() {
+    $("#overlay").fadeIn(300);　
+    });
+
+    $.ajax({
+      type: "GET",
+      url: "/list",
+      dataType: "json",
+      encode: true,
+    }).done(function (data) {
+      console.log(data);
+
+
+      setTimeout(function(){
+        $("#overlay").fadeOut(300);
+      },500);
+
+               $("#mytables").show();
+
+
+
+      $('#mytables').DataTable({
+          destroy: true,
+        "data": data,
+        "pagingType": "simple_numbers",
+        responsive: true,
+        "columns":  [
+               { "data": "title" },
+               { "data": "ratings" },
+               { "data": "votes" } ]
+        });
+       });
+
+
+   });
+</script>
